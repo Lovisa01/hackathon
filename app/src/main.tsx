@@ -1,8 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Layout from './pages/layout.tsx';
-import Home from './pages/home.tsx';
+import Layout from './pages/Layout.tsx';
+import Home from './pages/Home.tsx'
 import NoPage from './pages/NoPage.tsx';
 import Game from './pages/Game.tsx';
 // import App from './App.tsx'
