@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Circle} from "react-konva";
 
 interface BallProps {
@@ -13,15 +13,15 @@ interface BallProps {
     topyBound?: number
 }
 
-const playerColors = {1: 'red', 2: 'blue'}
+const playerColors = {1: '#6366f1', 2: '#de2a49'}
 const Ball: React.FC<BallProps> = ({x,y,player, fallingHandler,
                                        leftxBound, rightxBound,
-                                       bottomyBound, topyBound}) => {
+                                       bottomyBound, topyBound, isFront=false}) => {
 
     const [ballPosition, setBallPosition] = useState({ x: x, y: y });
     const [falling, setFalling] = useState(true)
 
-    const gravity = 4; // Adjust gravity as needed
+    const gravity = 5; // Adjust gravity as needed
     const radius = 40;
     const initialBounceStrength = 50; // Adjust initial bounce strength as needed
     const dampingFactor = 0.05; // Adjust damping factor as needed
@@ -91,8 +91,6 @@ const Ball: React.FC<BallProps> = ({x,y,player, fallingHandler,
             y={ballPosition.y}
             radius={radius}
             fill={playerColors[player]}
-            shadowEnabled={true}
-            shadowColor={"pink"}
         />
     )
 }
