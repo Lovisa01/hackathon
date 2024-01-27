@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
+import { NextUIProvider } from "@nextui-org/react";
 import Layout from "./pages/Layout";
 import Home from "./pages/Home";
 import Game from "./pages/Game";
@@ -8,12 +9,13 @@ import SignUp from "./pages/SignUp";
 import Login from "./pages/Login";
 import User from "./pages/User";
 import NewGame from "./pages/NewGame";
-import './App.css'
+import "./App.css";
 
 function App() {
+  const navigate = useNavigate();
 
   return (
-      <BrowserRouter>
+    <NextUIProvider navigate={navigate}>
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
@@ -26,8 +28,8 @@ function App() {
           <Route path="*" element={<NoPage />} />
         </Route>
       </Routes>
-    </BrowserRouter>
-  )
+    </NextUIProvider>
+  );
 }
 
-export default App
+export default App;

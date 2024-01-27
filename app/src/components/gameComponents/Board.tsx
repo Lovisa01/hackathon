@@ -4,6 +4,8 @@ import {Stage, Layer,Rect, Group} from 'react-konva';
 import Ball from './Ball.tsx'
 import { BASE_URL } from '../../../Constants';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, user } from "@nextui-org/react";
+import { useNavigate } from "react-router";
+import { Callout } from '@tremor/react';
 
 
 // The game board to be played on, which also handles the game state
@@ -15,6 +17,7 @@ type Props = {
 const Board = ({ user1, user2 }: Props) => {
     console.log(user1.name, user2.name)
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const navigate = useNavigate();
 
         const [stageSize, setStageSize] = useState({ width: 400, height: 300 });
 
@@ -223,86 +226,136 @@ const Board = ({ user1, user2 }: Props) => {
 
 
     return (
-        <div className="board flex" onMouseMove={handleMouseMove} onClick={handleClick}>
-            <Stage width={stageSize.width} height={stageSize.height * 0.9}>
-                <Layer>
-                    <Group>
-                    {/* {!droppingBall && <Ball key={Math.random()}
+      <div className="board flex" onMouseMove={handleMouseMove} onClick={handleClick}>
+        <Stage width={stageSize.width} height={stageSize.height * 0.9}>
+          <Layer>
+            <Group>
+              {/* {!droppingBall && <Ball key={Math.random()}
                            x={position.x}
                            y={position.y}
                         player={currentPlayer}
                         isFront={true}
                     />} */}
-                    {balls.map((ball, ballIndex) => (
-                        <Ball key={ballIndex}
-                              x={ball.x}
-                              y={ball.y}
-                              player={ball.player}
-                              fallingHandler={handleDropBall}
-                              leftxBound={ball.leftxBound}
-                              rightxBound={ball.rightxBound}
-                              bottomyBound={ball.bottomyBound}
-                            topyBound={ball.topyBound}
-                            zIndex={10}
-                        />
-                    ))}
-                    {boxes.map((box, index) => (
-                        <Rect key={index}
-                              x={box.x}
-                              y={box.y}
-                              width={box.width}
-                              height={box.height}
-                              fillEnabled={false}
-                              stroke="blue"
-                            strokeWidth={2}
-                            cornerRadius={10}
-                            zIndex={6}
+              {balls.map((ball, ballIndex) => (
+                <Ball
+                  key={ballIndex}
+                  x={ball.x}
+                  y={ball.y}
+                  player={ball.player}
+                  fallingHandler={handleDropBall}
+                  leftxBound={ball.leftxBound}
+                  rightxBound={ball.rightxBound}
+                  bottomyBound={ball.bottomyBound}
+                  topyBound={ball.topyBound}
+                  zIndex={10}
+                />
+              ))}
+              {boxes.map((box, index) => (
+                <Rect
+                  key={index}
+                  x={box.x}
+                  y={box.y}
+                  width={box.width}
+                  height={box.height}
+                  fillEnabled={false}
+                  stroke="#2a3aa1"
+                  strokeWidth={3}
+                  cornerRadius={10}
+                  zIndex={6}
 
-                            // opacity={0}
-                        />
+                  // opacity={0}
+                />
+              ))}
+            </Group>
+          </Layer>
+        </Stage>
 
-                    ))}
-                    </Group>
-                </Layer>
-            </Stage>
-
-            {/* {boxes.map((box, index) => (
+        {/* {boxes.map((box, index) => (
                 <div className='absolute rounded-lg border-4 border-violet-400 border-blue-500 z-0'
                 style={{ width: boxWidth + 4, height: boxHeight + 4, top: `calc(${box.y}px + 62px)`, left: `calc(${box.x}px - 2px)` }}
                 ></div>
             ))} */}
 
+        {!droppingBall && (
+          <div
+            className="absolute rounded-full text-xl px-6"
+            style={{
+              width: radius * 2,
+              height: radius * 2,
+              transform: `translate(${mouse.x - radius}px, ${mouse.y - radius * 2 - 20}px)`,
+              backgroundColor: playerColors[currentPlayer - 1],
+            }}
+          ></div>
+        )}
 
-            {!droppingBall && <div className="absolute rounded-full text-xl px-6"
-                style={{ width: radius*2+2, height: radius*2+2, transform: `translate(${mouse.x - radius}px, ${mouse.y - radius*2-20}px)`, backgroundColor: playerColors[currentPlayer-1] }}
-            ></div>}
-
-            <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1"></ModalHeader>
-              <ModalBody>
+            <div
+                className="absolute flex top-40 left-20"
+                style={{
+                    border: currentPlayer == 1 ? "2px solid rgba(139, 92, 246, 0.8)" : "none",
+                    borderRadius: "10px",
+                    boxShadow: currentPlayer == 1 ? "0 3px 10px rgb(139 92 246 / 0.5)" : "none",
+                    transition: "all 0.1s ease-in-out",
+                }}
+            >
+            <Callout title={user1.name} color={"violet"} className="text-xl px-6"
+            ></Callout>
+            </div>
+            <div
+                className="absolute flex top-40 right-20"
+                style={{
+                    border: currentPlayer == 2 ? "2px solid rgba(236, 72, 153, 0.8)" : "none",
+                    borderRadius: "10px",
+                    boxShadow: currentPlayer == 2 ? "0 3px 10px rgb(236 72 153 / 0.5)" : "none",
+                    transition: "all 0.1s ease-in-out",
+                }}
+            >
+        <Callout title={user2.name} color={"pink"} className="text-xl px-6" />
+            </div>
+            
+        <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+          <ModalContent>
+            {(onClose) => (
+              <>
+                <ModalHeader className="flex flex-col gap-1"></ModalHeader>
+                <ModalBody>
                   <div>
-                    <h1>{currentPlayer == 2 ? user1.name : user2.name } wins!</h1>
+                    <h1>{currentPlayer == 2 ? user1.name : user2.name} wins!</h1>
                   </div>
-              </ModalBody>
-              <ModalFooter>
-                <Button
-                  color="primary"
-                  onPress={() => {
-                    onClose();
-                    window.location.href = "/";
-                  }}
-                >
-                  Home
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
-        </div>
+                </ModalBody>
+                <ModalFooter>
+                  <Button
+                    color="default"
+                    onPress={() => {
+                      onClose();
+                      window.location.href = "/";
+                    }}
+                  >
+                    Home
+                  </Button>
+                  <Button
+                    color="default"
+                    onPress={() => {
+                      onClose();
+                      navigate("/scoreboard");
+                    }}
+                  >
+                    View Scoreboard
+                  </Button>
+                  <Button
+                    color="primary"
+                    onPress={() => {
+                      onClose();
+                      navigate("/newgame");
+                    }}
+                  >
+                    Play Again!
+                  </Button>
+                </ModalFooter>
+              </>
+            )}
+          </ModalContent>
+        </Modal>
+      </div>
     );
 };
 

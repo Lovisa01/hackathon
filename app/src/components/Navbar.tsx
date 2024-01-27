@@ -8,8 +8,7 @@ export default function App() {
   return (
     <Navbar isBordered maxWidth="full">
       <NavbarBrand>
-        <GameLogo />
-        <p className="font-bold text-inherit">GAME</p>
+        <p className="font-bold text-inherit">CONNECT4</p>
       </NavbarBrand>
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
         <NavbarItem isActive={pathname === "/"}>
