@@ -1,11 +1,14 @@
 import React, {useEffect, useState} from 'react';
 import {Stage, Layer, Circle, Rect} from 'react-konva';
 import Ball from './Ball.tsx'
+import { useMouse } from '@uidotdev/usehooks';
+
 
 
 // The game board to be played on, which also handles the game state
 
 const Board = () => {
+    const [mouse] = useMouse();
     const [board, setBoard] = useState([
         [0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0],
@@ -157,7 +160,7 @@ const Board = () => {
 
 
     const handleMouseMove = (e: { clientX: any; clientY: number; }) => {
-        setPosition({ x: e.clientX, y: e.clientY - 120 });
+        setPosition({ x: mouse.x, y: mouse.y});
         // Update the position to follow the mouse pointer
     };
 

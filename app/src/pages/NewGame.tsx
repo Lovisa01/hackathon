@@ -4,6 +4,7 @@ import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button, RadioGro
 import { Flex } from "@tremor/react";
 import { BASE_URL } from "../../Constants";
 import { PlusIcon } from "@heroicons/react/outline";
+import { useNavigate } from "react-router-dom";
 
 type Props = {};
 
@@ -11,6 +12,10 @@ const NewGame = (props: Props) => {
   const [users, setUsers] = React.useState([{ id: 0, name: "", gamesWon: 0, totalGames: 0 }]);
   const [selectedPlayer1, setSelectedPlayer1] = React.useState(new Set([""]));
   const [selectedPlayer2, setSelectedPlayer2] = React.useState(new Set([""]));
+  const navigate = useNavigate();
+
+  const user1 = users.find((user) => user.name == selectedPlayer1.values().next().value);
+  const user2 = users.find((user) => user.name == selectedPlayer2.values().next().value);
 
   React.useEffect(() => {
     const getUsers = async () => {
@@ -86,7 +91,7 @@ const NewGame = (props: Props) => {
               return;
             }
             setTimeout(() => {
-              window.location.href = "/game";
+              navigate("/game", { state: { player1: user1, player2: user2 } });
             }, 400);
           }}
         >
