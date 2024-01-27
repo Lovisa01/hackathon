@@ -1,18 +1,9 @@
 import { Fragment, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { ArrowsExpandIcon } from "@heroicons/react/outline";
-import {
-  Button,
-  Card,
-  Text,
-  Table,
-  TableHead,
-  TableRow,
-  TableHeaderCell,
-  TableBody,
-  TableCell,
-} from "@tremor/react";
-import {BASE_URL} from "../../Constants";
+import { Button, Card, Text, Table, TableHead, TableRow, TableHeaderCell, TableBody, TableCell, Flex } from "@tremor/react";
+import { Select, SelectItem } from "@nextui-org/react";
+import { BASE_URL } from "../../Constants";
 
 // const users = [
 //   {
@@ -56,7 +47,12 @@ import {BASE_URL} from "../../Constants";
 
 export default function Scoreboard() {
   const [isOpen, setIsOpen] = useState(false);
-  const [users, setUsers] = useState([{id: 0, name: "", gamesWon: 0, totalGames: 0}]);
+  const [users, setUsers] = useState([{ id: 0, name: "", gamesWon: 0, totalGames: 0 }]);
+  const [sort, setSort] = useState("winrate");
+
+  const handleSelectionChange = (e: any) => {
+    setSort(e.target.value);
+  };
 
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
@@ -74,16 +70,58 @@ export default function Scoreboard() {
         console.log("error");
       } else {
         const data = await response.json();
+        if (sort == "wins") {
+          data.sort((a: { id: number; name: string; gamesWon: number; totalGames: number }, b: { id: number; name: string; gamesWon: number; totalGames: number }) => {
+            if (a.gamesWon > b.gamesWon) {
+              return -1;
+            }
+            if (a.gamesWon < b.gamesWon) {
+              return 1;
+            }
+            return 0;
+          });
+        } else if (sort == "winrate") {
+          data.sort((a: { id: number; name: string; gamesWon: number; totalGames: number }, b: { id: number; name: string; gamesWon: number; totalGames: number }) => {
+            if (a.gamesWon / a.totalGames > b.gamesWon / b.totalGames) {
+              return -1;
+            }
+            if (a.gamesWon / a.totalGames < b.gamesWon / b.totalGames) {
+              return 1;
+            }
+            if (a.totalGames == 0 || b.totalGames == 0) {
+              return -1;
+            }
+            return 0;
+          });
+        }
+
         setUsers(data);
       }
     };
     fetchUsers();
-  }, []);
+  }, [sort]);
 
+  console.log(sort);
 
   return (
     <>
-      <h1 style={{textAlign: "center", marginTop: "20px"}}>Top Scores</h1>
+      <h1 style={{ textAlign: "center", marginTop: "20px" }}>Top Scores</h1>
+      <Flex justifyContent="center" className="mt-6">
+        <Select
+          aria-label="Select Sort"
+          className="max-w-xs"
+          selectedKeys={[sort]}
+          // defaultSelectedKeys={["winrate"]}
+          onChange={handleSelectionChange}
+        >
+          <SelectItem key={"winrate"} value={"winrate"}>
+            Sort by Win Rate
+          </SelectItem>
+          <SelectItem key={"wins"} value={"wins"}>
+            Sort by Wins
+          </SelectItem>
+        </Select>
+      </Flex>
       <Card className="relative max-w-xl mx-auto h-96 overflow-hidden mt-12">
         <Table>
           <TableHead>
@@ -97,7 +135,7 @@ export default function Scoreboard() {
           <TableBody>
             {users.map((item, i) => (
               <TableRow key={item.name + item.id}>
-                <TableCell>{i+1}</TableCell>
+                <TableCell>{i + 1}</TableCell>
                 <TableCell>{item.name}</TableCell>
                 <TableCell className="text-right">
                   <Text>{item.gamesWon}</Text>

@@ -44,15 +44,17 @@ def user(id):
         db.session.commit()
         return jsonify(user.serialize())
 
-@app.route('/users/<int:id>/win', methods=['PUT'])
+@app.route('/users/<int:id1>/win/<int:id2>', methods=['PUT'])
 @cross_origin()
-def Win(id):
+def Win(id1, id2):
     if request.method == 'PUT':
-        user = User.query.get(id)
-        user.gamesWon += 1
-        user.totalGames += 1 
+        user1 = User.query.get(id1)
+        user2 = User.query.get(id2)
+        user1.gamesWon += 1
+        user1.totalGames += 1 
+        user2.totalGames += 1
         db.session.commit()
-        return jsonify(user.serialize())
+        return jsonify(user1.serialize(), user2.serialize())
 
  
 @app.route('/login', methods=['POST'])

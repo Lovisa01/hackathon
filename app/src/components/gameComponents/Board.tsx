@@ -1,14 +1,20 @@
 import React, {useEffect, useState} from 'react';
 import {useMouse} from "@uidotdev/usehooks";
-import {Stage, Layer,Rect} from 'react-konva';
+import {Stage, Layer,Rect, Group} from 'react-konva';
 import Ball from './Ball.tsx'
-import {BASE_URL} from '../../../Constants';
+import { BASE_URL } from '../../../Constants';
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, user } from "@nextui-org/react";
 
 
 // The game board to be played on, which also handles the game state
+type Props = {
+    user1: {id: number, name: string, gamesWon: number, totalGames: number},
+    user2: {id: number, name: string, gamesWon: number, totalGames: number}
+};
 
-const Board = () => {
-
+const Board = ({ user1, user2 }: Props) => {
+    console.log(user1.name, user2.name)
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
         const [stageSize, setStageSize] = useState({ width: 400, height: 300 });
 
@@ -46,7 +52,9 @@ const Board = () => {
 
 
     const [currentPlayer, setCurrentPlayer] = useState(1)
-    const [hasWon, setWinner] = useState(0)
+    const playerColors = [ '#6366f1', '#de2a49']
+    // const [hasWon, setWinner] = useState(0)
+    let hasWon = 0
 
     const [droppingBall, setDropBall] = useState(false);
     const [position, setPosition] = useState({ x: window.innerWidth / 2 - radius , y: radius * 2 });
@@ -82,7 +90,8 @@ const Board = () => {
                     return false; // If index is out of bounds, break the loop
                 }
             }
-            setWinner(player)
+            console.log(player)
+            hasWon = player
             return true; // Four in a row found in this direction
         };
 
@@ -109,15 +118,28 @@ const Board = () => {
         let winner = checkFourInARow()
         if (winner){
             const win = async () => {
-                const response = await fetch(BASE_URL + "/users/0/win", {
-                    method: "POST",
+                console.log("winner ", hasWon, user1, user2)
+                const userWinner = hasWon == 1 ? user1 : user2
+                const userLoser = hasWon == 1 ? user2 : user1
+                const response = await fetch(BASE_URL + "/users/" + userWinner.id + "/win/" + userLoser.id, {
+                    method: "PUT",
                     headers: {
                         "Content-Type": "application/json",
                     },
+                    body: JSON.stringify({
+                        name: userWinner.name,
+                        gamesWon: userWinner.gamesWon,
+                        totalGames: userWinner.totalGames,
+                    }),
                 })
+                if (response.ok) {
+                    console.log("Win recorded")
+                    onOpen();
+                }
                 const data = await response.json()
                 console.log(data)
             }
+            win()
         }
     }
     function generateBoxGrid() {
@@ -204,11 +226,13 @@ const Board = () => {
         <div className="board flex" onMouseMove={handleMouseMove} onClick={handleClick}>
             <Stage width={stageSize.width} height={stageSize.height * 0.9}>
                 <Layer>
-                    {!droppingBall && <Ball key={Math.random()}
+                    <Group>
+                    {/* {!droppingBall && <Ball key={Math.random()}
                            x={position.x}
                            y={position.y}
-                           player={currentPlayer}
-                    />}
+                        player={currentPlayer}
+                        isFront={true}
+                    />} */}
                     {balls.map((ball, ballIndex) => (
                         <Ball key={ballIndex}
                               x={ball.x}
@@ -218,7 +242,8 @@ const Board = () => {
                               leftxBound={ball.leftxBound}
                               rightxBound={ball.rightxBound}
                               bottomyBound={ball.bottomyBound}
-                              topyBound={ball.topyBound}
+                            topyBound={ball.topyBound}
+                            zIndex={10}
                         />
                     ))}
                     {boxes.map((box, index) => (
@@ -229,11 +254,54 @@ const Board = () => {
                               height={box.height}
                               fillEnabled={false}
                               stroke="blue"
-                              strokeWidth={2} />
+                            strokeWidth={2}
+                            cornerRadius={10}
+                            zIndex={6}
+                            
+                            // opacity={0}
+                        />
+                        
                     ))}
+                    </Group>
                 </Layer>
             </Stage>
 
+            {/* {boxes.map((box, index) => (
+                <div className='absolute rounded-lg border-4 border-violet-400 border-blue-500 z-0'
+                style={{ width: boxWidth + 4, height: boxHeight + 4, top: `calc(${box.y}px + 62px)`, left: `calc(${box.x}px - 2px)` }}
+                ></div>
+            ))} */}
+            
+
+            {!droppingBall && <div className="absolute rounded-full text-xl px-6"
+                style={{ width: radius*2+2, height: radius*2+2, transform: `translate(${mouse.x - radius}px, ${mouse.y - radius*2-20}px)`, backgroundColor: playerColors[currentPlayer-1] }}
+            ></div>}
+
+            <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1"></ModalHeader>
+              <ModalBody>
+                  <div>
+                    <h1>{currentPlayer == 2 ? user1.name : user2.name } wins!</h1>
+                  </div>
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  color="primary"
+                  onPress={() => {
+                    onClose();
+                    window.location.href = "/";
+                  }}
+                >
+                  Home
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
         </div>
     );
 };

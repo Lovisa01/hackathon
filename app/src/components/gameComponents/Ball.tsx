@@ -11,17 +11,18 @@ interface BallProps {
     rightxBound?: number
     bottomyBound?: number
     topyBound?: number
+    isFront?: boolean
 }
 
-const playerColors = {1: 'red', 2: 'blue'}
+const playerColors = {1: '#6366f1', 2: '#de2a49'}
 const Ball: React.FC<BallProps> = ({x,y,player, fallingHandler,
                                        leftxBound, rightxBound,
-                                       bottomyBound, topyBound}) => {
+                                       bottomyBound, topyBound, isFront=false}) => {
 
     const [ballPosition, setBallPosition] = useState({ x: x, y: y });
     const [falling, setFalling] = useState(true)
 
-    const gravity = 2.5; // Adjust gravity as needed
+    const gravity = 5; // Adjust gravity as needed
     const radius = 40;
 
     useEffect(() => {
@@ -53,6 +54,7 @@ const Ball: React.FC<BallProps> = ({x,y,player, fallingHandler,
             y={ballPosition.y}
             radius={radius}
             fill={playerColors[player]}
+            zIndex={isFront ? 0 : 5}
         />
     )
 }
