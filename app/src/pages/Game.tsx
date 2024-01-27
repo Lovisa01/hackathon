@@ -1,5 +1,5 @@
 import React from 'react';
-import Board from '../Components/gameComponents/Board';
+import Board from '../components/gameComponents/Board';
 
 const Game = () => {
     return (
