@@ -18,8 +18,10 @@
     "@tremor/react": "^3.13.3",
     "@uidotdev/usehooks": "^2.4.1",
     "framer-motion": "^11.0.3",
+    "konva": "^9.3.2",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-konva": "^18.2.10"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.7",
