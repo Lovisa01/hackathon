@@ -229,7 +229,9 @@ const Board = () => {
                               height={box.height}
                               fillEnabled={false}
                               stroke="blue"
-                              strokeWidth={2} />
+                              strokeWidth={2}
+                              opacity={1}
+                        />
                     ))}
                 </Layer>
             </Stage>
