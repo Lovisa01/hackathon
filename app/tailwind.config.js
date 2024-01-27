@@ -18,11 +18,11 @@ export default {
         // light mode
         tremor: {
           brand: {
-            faint: colors.blue[50],
-            muted: colors.blue[200],
-            subtle: colors.blue[400],
-            DEFAULT: colors.blue[500],
-            emphasis: colors.blue[700],
+            faint: colors.purple[50],
+            muted: colors.purple[200],
+            subtle: colors.purple[400],
+            DEFAULT: colors.purple[500],
+            emphasis: colors.purple[700],
             inverted: colors.white,
           },
           background: {
@@ -129,6 +129,18 @@ export default {
     },
   ],
   darkMode: "class",
-  plugins: [nextui(), require('@headlessui/tailwindcss'), require('@tailwindcss/forms')],
+  plugins: [nextui({
+    themes: {
+      light: {
+        colors: {
+          primary: {
+            DEFAULT: "#5C6AC4",
+            hover: "#4C51BF",
+            pressed: "#434190",
+          },
+        },
+      },
+    }
+  }), require('@headlessui/tailwindcss'), require('@tailwindcss/forms')],
 }
 

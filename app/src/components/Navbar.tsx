@@ -17,10 +17,10 @@ export default function App() {
             Home
           </Link>
         </NavbarItem>
-        <NavbarItem isActive={pathname === "/game"}>
-          <Link color={pathname === "/game" ? undefined : "foreground"} href="/game" aria-current="page">
-            <p className="text-3xl ">
-              Game
+        <NavbarItem isActive={pathname === "/newgame"}>
+          <Link color={pathname === "/newgame" ? undefined : "foreground"} href="/newgame" aria-current="page" size="lg">
+            <p className="">
+              New Game
             </p>
           </Link>
         </NavbarItem>
@@ -32,11 +32,11 @@ export default function App() {
       </NavbarContent>
       <NavbarContent justify="end">
         <NavbarItem className="hidden lg:flex">
-          <Link href="#">Login</Link>
+          <Link href="/login">My Stats</Link>
         </NavbarItem>
         <NavbarItem>
           <Button as={Link} color="primary" href="/signup" variant="flat">
-            Sign Up
+            New User
           </Button>
         </NavbarItem>
       </NavbarContent>

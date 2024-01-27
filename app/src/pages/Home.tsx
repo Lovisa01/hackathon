@@ -21,7 +21,7 @@ export default function Home() {
         color: "white",
         }}
         onClick={() => {
-          setTimeout(() => { window.location.href = "/game" }, 400);
+          setTimeout(() => { window.location.href = "/newgame" }, 400);
           
         }}
       >
