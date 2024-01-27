@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Game from "./pages/Game";
 import Scoreboard from "./pages/Scoreboard";
 import NoPage from "./pages/NoPage";
+import SignUp from "./pages/SignUp";
 import './App.css'
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
           <Route index element={<Home />} />
           <Route path="game" element={<Game />} />
           <Route path="scoreboard" element={<Scoreboard />} />
+          <Route path="signup" element={<SignUp />} />
           <Route path="*" element={<NoPage />} />
         </Route>
       </Routes>
