@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Circle} from "react-konva";
 
 interface BallProps {
@@ -16,7 +16,7 @@ interface BallProps {
 const playerColors = {1: '#6366f1', 2: '#de2a49'}
 const Ball: React.FC<BallProps> = ({x,y,player, fallingHandler,
                                        leftxBound, rightxBound,
-                                       bottomyBound, topyBound, isFront=false}) => {
+                                       bottomyBound, topyBound}) => {
 
     const [ballPosition, setBallPosition] = useState({ x: x, y: y });
     const [falling, setFalling] = useState(true)
