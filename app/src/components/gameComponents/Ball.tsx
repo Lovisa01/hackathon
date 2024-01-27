@@ -25,6 +25,7 @@ const Ball: React.FC<BallProps> = ({x,y,player, fallingHandler,
     const radius = 40;
     const initialBounceStrength = 50; // Adjust initial bounce strength as needed
     const dampingFactor = 0.05; // Adjust damping factor as needed
+    let hasBounced = false
 
     useEffect(() => {
         const updatePosition = () => {
@@ -55,7 +56,7 @@ const Ball: React.FC<BallProps> = ({x,y,player, fallingHandler,
         const circle = circleRef.current;
 
         const animation = new window.Konva.Animation(frame => {
-            if (falling){
+            if (falling && !hasBounced){
                 return
             }
 
@@ -79,6 +80,7 @@ const Ball: React.FC<BallProps> = ({x,y,player, fallingHandler,
         return () => {
             animation.stop();
             clearTimeout(stopAnimationTimeout);
+            hasBounced = true
         };
     }, [falling, ballPosition]);
 
