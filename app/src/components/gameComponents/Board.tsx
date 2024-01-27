@@ -1,14 +1,40 @@
 import React, {useEffect, useState} from 'react';
-import {Stage, Layer, Circle, Rect} from 'react-konva';
+import {useMouse} from "@uidotdev/usehooks";
+import {Stage, Layer,Rect} from 'react-konva';
 import Ball from './Ball.tsx'
-import { useMouse } from '@uidotdev/usehooks';
-
+import {BASE_URL} from '../../../Constants';
 
 
 // The game board to be played on, which also handles the game state
 
 const Board = () => {
-    const [mouse] = useMouse();
+
+
+        const [stageSize, setStageSize] = useState({ width: 400, height: 300 });
+
+        // Update the stage size when the window is resized
+        useEffect(() => {
+            const handleResize = () => {
+                setStageSize({
+                    width: window.innerWidth,
+                    height: window.innerHeight,
+                });
+            };
+
+            window.addEventListener('resize', handleResize);
+            // Initial setup
+            handleResize();
+
+            // Cleanup event listener on component unmount
+            return () => {
+                window.removeEventListener('resize', handleResize);
+            };
+        }, []);
+
+    const radius = 40
+
+    const [mouse] = useMouse()
+
     const [board, setBoard] = useState([
         [0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0],
@@ -18,26 +44,28 @@ const Board = () => {
         [0, 0, 0, 0, 0, 0, 0]
     ]);
 
+
     const [currentPlayer, setCurrentPlayer] = useState(1)
     const [hasWon, setWinner] = useState(0)
 
     const [droppingBall, setDropBall] = useState(false);
-    const [position, setPosition] = useState({ x: 0, y: 0 });
+    const [position, setPosition] = useState({ x: window.innerWidth / 2 - radius , y: radius * 2 });
 
     const [balls, setBalls] = useState([])
 
     const rows = 6;
     const columns = 7;
-    const boxWidth = 110;
-    const boxHeight = 110;
+    const boxWidth = 100;
+    const boxHeight = 100;
 
     const [boxes, setBoxes] = useState(generateBoxGrid)
 
-    function checkFourInARow(array) {
+    function checkFourInARow() {
 
         // Function to check for four in a row in a specific direction
         const checkDirection = (startRow, startCol, rowDelta, colDelta) => {
-            const player: number = array[startRow][startCol];
+
+            const player: number = board[startRow][startCol];
 
             if (player == 0){return}
 
@@ -47,7 +75,7 @@ const Board = () => {
 
                 // Check if the index is within bounds
                 if (row >= 0 && row < rows && col >= 0 && col < columns) {
-                    if (array[row][col] !== player) {
+                    if (board[row][col] !== player) {
                         return false; // If any element doesn't match, break the loop
                     }
                 } else {
@@ -78,9 +106,18 @@ const Board = () => {
     const handleDropBall = (bool: boolean) => {
         setDropBall(bool)
 
-        let winner = checkFourInARow(board)
+        let winner = checkFourInARow()
         if (winner){
-            console.log("let him cook")
+            const win = async () => {
+                const response = await fetch(BASE_URL + "/users/0/win", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                })
+                const data = await response.json()
+                console.log(data)
+            }
         }
     }
     function generateBoxGrid() {
@@ -101,9 +138,7 @@ const Board = () => {
 
     const handleClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 
-        if (droppingBall){return}
-
-        setDropBall(true)
+        if (droppingBall || position.y >= window.innerHeight / 2 - (rows/2) * boxHeight - radius){return}
 
         let currCol = null
         let leftx = null
@@ -111,7 +146,7 @@ const Board = () => {
 
         for (let col = 0; col < columns; col++) {
             const x = window.innerWidth / 2 - (columns / 2) * boxWidth + col * (boxWidth);
-            if (position.x >= x && position.x <= x + boxWidth) {
+            if (position.x >= x + radius && position.x <= x + boxWidth - radius) {
                 currCol = col;
                 leftx = x
                 rightx = x + boxWidth
@@ -152,6 +187,7 @@ const Board = () => {
         ballsCopy.push({x: position.x, y: position.y, player: currentPlayer, leftxBound: leftx, rightxBound: rightx,
             bottomyBound: bottomy, topyBound: topy})
         setBalls(ballsCopy)
+        setDropBall(true)
 
 
         // Implement logic to drop the piece to the lowest available position in the selected column, maybe konva.js?
@@ -160,19 +196,13 @@ const Board = () => {
 
 
     const handleMouseMove = (e: { clientX: any; clientY: number; }) => {
-        setPosition({ x: mouse.x, y: mouse.y});
-        // Update the position to follow the mouse pointer
+        setPosition({ x: mouse.x, y: mouse.y - radius - 20 });
     };
-
-    // Implement game logic (e.g., handling player moves, checking for a winner)
-
-    // The falling ball effect
-
 
 
     return (
-        <div className="board" onMouseMove={handleMouseMove} onClick={handleClick}>
-            <Stage width={window.innerWidth} height={window.innerHeight}>
+        <div className="board flex" onMouseMove={handleMouseMove} onClick={handleClick}>
+            <Stage width={stageSize.width} height={stageSize.height * 0.9}>
                 <Layer>
                     {!droppingBall && <Ball key={Math.random()}
                            x={position.x}
